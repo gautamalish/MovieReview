@@ -16,12 +16,10 @@ const Table = ({ employees, handleEdit, handleDelete }) => {
       <table className="striped-table">
         <thead>
           <tr>
-            <th>No.</th>
-            <th>First Name</th>
-            <th>Last Name</th>
-            <th>Email</th>
-            <th>Salary</th>
-            <th>Date</th>
+            <th>Movie Name</th>
+            <th>Rating</th>
+            <th>Director</th>
+            <th>Release Date</th>
             <th colSpan={2} className="text-center">
               Actions
             </th>
@@ -31,16 +29,15 @@ const Table = ({ employees, handleEdit, handleDelete }) => {
           {employees.length > 0 ? (
             employees.map((employee, i) => (
               <tr key={employee.id}>
-                <td>{i + 1}</td>
-                <td>{employee.firstName}</td>
-                <td>{employee.lastName}</td>
-                <td>{employee.email}</td>
-                <td>{formatter.format(employee.salary)}</td>
-                <td>{employee.date} </td>
+                <td>{employee.title}</td>
+                <td>{employee.review}</td>
+                <td>{employee.director}</td>
+                <td>{employee.releaseDate}</td>
                 <td className="text-right">
                   <button
-                    onClick={() => handleEdit(employee.id)}
+                    onClick={() => handleEdit(employee.id) }
                     className="button muted-button"
+                    
                   >
                     Edit
                   </button>
@@ -49,6 +46,7 @@ const Table = ({ employees, handleEdit, handleDelete }) => {
                   <button
                     onClick={() => handleDelete(employee.id)}
                     className="button muted-button"
+                    
                   >
                     Delete
                   </button>

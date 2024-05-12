@@ -1,22 +1,27 @@
 import React, { useState, useEffect } from 'react';
 import Swal from 'sweetalert2';
-import { collection, addDoc } from "firebase/firestore";
+import { collection, addDoc,getDocs } from "firebase/firestore";
 import Header from './Header';
 import Table from './Table';
 import Add from './Add';
 import Edit from './Edit';
-
-import { employeesData } from '../../data';
-
+import { db } from '../../config/firestore';
 const Dashboard = ({ setIsAuthenticated }) => {
-  const [employees, setEmployees] = useState(employeesData);
+  const [employees, setEmployees] = useState([]);
   const [selectedEmployee, setSelectedEmployee] = useState(null);
   const [isAdding, setIsAdding] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
-
+  
+  async function getMovieData(){
+    const querySnapshot = await getDocs(collection(db, "movie"));
+    const movies=querySnapshot.docs.map(doc=>({id:doc.id,...doc.data()}))
+  querySnapshot.forEach((doc) => {
+    console.log(`${doc.id} => ${JSON.stringify(doc.data())}`);
+});
+  setEmployees(movies)
+  }
   useEffect(() => {
-    const data = JSON.parse(localStorage.getItem('employees_data'));
-    if (data !== null && Object.keys(data).length !== 0) setEmployees(data);
+    getMovieData()
   }, []);
 
   const handleEdit = id => {
