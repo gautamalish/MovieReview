@@ -1,17 +1,18 @@
 import React, { useState } from 'react';
 import Swal from 'sweetalert2';
+import { collection, addDoc } from "firebase/firestore"; 
+import { db } from '../../config/firestore';
 
-const Add = ({ employees, setEmployees, setIsAdding }) => {
-  const [firstName, setFirstName] = useState('');
-  const [lastName, setLastName] = useState('');
-  const [email, setEmail] = useState('');
-  const [salary, setSalary] = useState('');
-  const [date, setDate] = useState('');
+const Add = ({ employees, setEmployees, setIsAdding,getMovieData }) => {
+  const [title, setTitle] = useState('');
+  const [review, setReview] = useState('');
+  const [director, setDirector] = useState('');
+  const [releaseDate, setReleaseDate] = useState('');
 
-  const handleAdd = e => {
+  const handleAdd = async (e) => {
     e.preventDefault();
 
-    if (!firstName || !lastName || !email || !salary || !date) {
+    if (!title ||  !review || !director || !releaseDate) {
       return Swal.fire({
         icon: 'error',
         title: 'Error!',
@@ -23,22 +24,28 @@ const Add = ({ employees, setEmployees, setIsAdding }) => {
     const id = employees.length + 1;
     const newEmployee = {
       id,
-      firstName,
-      lastName,
-      email,
-      salary,
-      date,
+      title,
+      review,
+      director,
+      releaseDate,
     };
 
     employees.push(newEmployee);
-    localStorage.setItem('employees_data', JSON.stringify(employees));
+    try {
+      const docRef = await addDoc(collection(db, "movie"), {
+        ...newEmployee
+      });
+      console.log("Document written with ID: ", docRef.id);
+    } catch (e) {
+      console.error("Error adding document: ", e);
+    }
     setEmployees(employees);
     setIsAdding(false);
-
+    getMovieData()
     Swal.fire({
       icon: 'success',
       title: 'Added!',
-      text: `${firstName} ${lastName}'s data has been Added.`,
+      text: `${title}'s data has been Added.`,
       showConfirmButton: false,
       timer: 1500,
     });
@@ -47,46 +54,38 @@ const Add = ({ employees, setEmployees, setIsAdding }) => {
   return (
     <div className="small-container">
       <form onSubmit={handleAdd}>
-        <h1>Add Employee</h1>
-        <label htmlFor="firstName">First Name</label>
+        <h1>Add Review</h1>
+        <label htmlFor="firstName">Movie Title</label>
         <input
           id="firstName"
           type="text"
           name="firstName"
-          value={firstName}
-          onChange={e => setFirstName(e.target.value)}
+          value={title}
+          onChange={e => setTitle(e.target.value)}
         />
-        <label htmlFor="lastName">Last Name</label>
-        <input
-          id="lastName"
-          type="text"
-          name="lastName"
-          value={lastName}
-          onChange={e => setLastName(e.target.value)}
-        />
-        <label htmlFor="email">Email</label>
+        <label htmlFor="email">Review</label>
         <input
           id="email"
-          type="email"
+          type="number"
           name="email"
-          value={email}
-          onChange={e => setEmail(e.target.value)}
+          value={review}
+          onChange={e => setReview(e.target.value)}
         />
-        <label htmlFor="salary">Salary ($)</label>
+        <label htmlFor="salary">Director</label>
         <input
           id="salary"
-          type="number"
+          type="text"
           name="salary"
-          value={salary}
-          onChange={e => setSalary(e.target.value)}
+          value={director}
+          onChange={e => setDirector(e.target.value)}
         />
-        <label htmlFor="date">Date</label>
+        <label htmlFor="date">Release Date</label>
         <input
           id="date"
           type="date"
           name="date"
-          value={date}
-          onChange={e => setDate(e.target.value)}
+          value={releaseDate}
+          onChange={e => setReleaseDate(e.target.value)}
         />
         <div style={{ marginTop: '30px' }}>
           <input type="submit" value="Add" />

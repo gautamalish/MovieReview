@@ -78,6 +78,7 @@ const Dashboard = ({ setIsAuthenticated }) => {
           employees={employees}
           setEmployees={setEmployees}
           setIsAdding={setIsAdding}
+          getMovieData={getMovieData}
         />
       )}
       {isEditing && (
