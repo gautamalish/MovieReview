@@ -21,9 +21,7 @@ const Add = ({ employees, setEmployees, setIsAdding,getMovieData }) => {
       });
     }
 
-    const id = employees.length + 1;
     const newEmployee = {
-      id,
       title,
       review,
       director,

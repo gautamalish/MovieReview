@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import Swal from 'sweetalert2';
-import { collection, addDoc,getDocs } from "firebase/firestore";
+import { collection, addDoc,getDocs, where } from "firebase/firestore";
 import Header from './Header';
 import Table from './Table';
 import Add from './Add';
 import Edit from './Edit';
 import { db } from '../../config/firestore';
+import { doc, deleteDoc } from "firebase/firestore";
 const Dashboard = ({ setIsAuthenticated }) => {
   const [employees, setEmployees] = useState([]);
   const [selectedEmployee, setSelectedEmployee] = useState(null);
@@ -14,11 +15,8 @@ const Dashboard = ({ setIsAuthenticated }) => {
   
   async function getMovieData(){
     const querySnapshot = await getDocs(collection(db, "movie"));
-    const movies=querySnapshot.docs.map(doc=>({id:doc.id,...doc.data()}))
-  querySnapshot.forEach((doc) => {
-    console.log(`${doc.id} => ${JSON.stringify(doc.data())}`);
-});
-  setEmployees(movies)
+    const movies=querySnapshot.docs.map(doc=>({id:doc.id, ...doc.data()}))
+    setEmployees(movies)
   }
   useEffect(() => {
     getMovieData()
@@ -41,18 +39,18 @@ const Dashboard = ({ setIsAuthenticated }) => {
       cancelButtonText: 'No, cancel!',
     }).then(result => {
       if (result.value) {
-        const [employee] = employees.filter(employee => employee.id === id);
-
+        const [employee] = employees.filter(employee => employee.id == id);
+        deleteDoc(doc(db, "movie",id));
         Swal.fire({
           icon: 'success',
           title: 'Deleted!',
-          text: `${employee.firstName} ${employee.lastName}'s data has been deleted.`,
+          text: `${employee.title}'s data has been deleted.`,
           showConfirmButton: false,
           timer: 1500,
         });
 
         const employeesCopy = employees.filter(employee => employee.id !== id);
-        localStorage.setItem('employees_data', JSON.stringify(employeesCopy));
+        console.log(employeesCopy)
         setEmployees(employeesCopy);
       }
     });
@@ -87,6 +85,7 @@ const Dashboard = ({ setIsAuthenticated }) => {
           selectedEmployee={selectedEmployee}
           setEmployees={setEmployees}
           setIsEditing={setIsEditing}
+          getMovieData={getMovieData}
         />
       )}
     </div>

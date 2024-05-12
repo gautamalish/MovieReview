@@ -1,19 +1,19 @@
 import React, { useState } from 'react';
 import Swal from 'sweetalert2';
-
-const Edit = ({ employees, selectedEmployee, setEmployees, setIsEditing }) => {
+import { doc,setDoc } from 'firebase/firestore';
+import { db } from '../../config/firestore';
+const Edit = ({ employees, selectedEmployee, setEmployees, setIsEditing,getMovieData }) => {
   const id = selectedEmployee.id;
 
-  const [firstName, setFirstName] = useState(selectedEmployee.firstName);
-  const [lastName, setLastName] = useState(selectedEmployee.lastName);
-  const [email, setEmail] = useState(selectedEmployee.email);
-  const [salary, setSalary] = useState(selectedEmployee.salary);
-  const [date, setDate] = useState(selectedEmployee.date);
-
-  const handleUpdate = e => {
+  const [title, setTitle] = useState(selectedEmployee.title);
+  const [review, setReview] = useState(selectedEmployee.review);
+  const [director, setDirector] = useState(selectedEmployee.director);
+  const [releaseDate, setReleaseDate] = useState(selectedEmployee.releaseDate);
+  console.log(selectedEmployee)
+  const handleUpdate = async (e) => {
     e.preventDefault();
 
-    if (!firstName || !lastName || !email || !salary || !date) {
+    if (!title || !review || !director || !releaseDate) {
       return Swal.fire({
         icon: 'error',
         title: 'Error!',
@@ -23,29 +23,24 @@ const Edit = ({ employees, selectedEmployee, setEmployees, setIsEditing }) => {
     }
 
     const employee = {
-      id,
-      firstName,
-      lastName,
-      email,
-      salary,
-      date,
+      title,
+      review,
+      director,
+      releaseDate,
     };
 
-    for (let i = 0; i < employees.length; i++) {
-      if (employees[i].id === id) {
-        employees.splice(i, 1, employee);
-        break;
-      }
-    }
-
-    localStorage.setItem('employees_data', JSON.stringify(employees));
+    await setDoc(doc(db,"movie",id),{
+      ...employee
+    })
+    
     setEmployees(employees);
     setIsEditing(false);
-
+    getMovieData()
+    
     Swal.fire({
       icon: 'success',
       title: 'Updated!',
-      text: `${employee.firstName} ${employee.lastName}'s data has been updated.`,
+      text: `${employee.title}'s data has been updated.`,
       showConfirmButton: false,
       timer: 1500,
     });
@@ -54,46 +49,38 @@ const Edit = ({ employees, selectedEmployee, setEmployees, setIsEditing }) => {
   return (
     <div className="small-container">
       <form onSubmit={handleUpdate}>
-        <h1>Edit Employee</h1>
-        <label htmlFor="firstName">First Name</label>
+        <h1>Edit Review</h1>
+        <label htmlFor="firstName">Title</label>
         <input
           id="firstName"
           type="text"
           name="firstName"
-          value={firstName}
-          onChange={e => setFirstName(e.target.value)}
+          value={title}
+          onChange={e => setTitle(e.target.value)}
         />
-        <label htmlFor="lastName">Last Name</label>
-        <input
-          id="lastName"
-          type="text"
-          name="lastName"
-          value={lastName}
-          onChange={e => setLastName(e.target.value)}
-        />
-        <label htmlFor="email">Email</label>
+        <label htmlFor="email">Review</label>
         <input
           id="email"
-          type="email"
+          type="number"
           name="email"
-          value={email}
-          onChange={e => setEmail(e.target.value)}
+          value={review}
+          onChange={e => setReview(e.target.value)}
         />
-        <label htmlFor="salary">Salary ($)</label>
+        <label htmlFor="salary">Director</label>
         <input
           id="salary"
-          type="number"
+          type="text"
           name="salary"
-          value={salary}
-          onChange={e => setSalary(e.target.value)}
+          value={director}
+          onChange={e => setDirector(e.target.value)}
         />
-        <label htmlFor="date">Date</label>
+        <label htmlFor="date">Release Date</label>
         <input
           id="date"
           type="date"
           name="date"
-          value={date}
-          onChange={e => setDate(e.target.value)}
+          value={releaseDate}
+          onChange={e => setReleaseDate(e.target.value)}
         />
         <div style={{ marginTop: '30px' }}>
           <input type="submit" value="Update" />
