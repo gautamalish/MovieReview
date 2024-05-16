@@ -12,6 +12,7 @@ const Dashboard = ({ setIsAuthenticated }) => {
   const [selectedEmployee, setSelectedEmployee] = useState(null);
   const [isAdding, setIsAdding] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
+  const [sortBy, setSortBy] = useState('title');
   
   async function getMovieData(){
     const querySnapshot = await getDocs(collection(db, "movie"));
@@ -63,11 +64,13 @@ const Dashboard = ({ setIsAuthenticated }) => {
           <Header
             setIsAdding={setIsAdding}
             setIsAuthenticated={setIsAuthenticated}
+            setSortBy={setSortBy}
           />
           <Table
             employees={employees}
             handleEdit={handleEdit}
             handleDelete={handleDelete}
+            sortBy={sortBy}
           />
         </>
       )}

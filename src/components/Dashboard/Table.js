@@ -1,12 +1,20 @@
 import React from 'react';
+import { useState } from 'react';
+const Table = ({ employees, handleEdit, handleDelete,sortBy }) => {
 
-const Table = ({ employees, handleEdit, handleDelete }) => {
+  const sortEmployees = (a, b) => {
+    if (a[sortBy] < b[sortBy]) return -1;
+    if (a[sortBy] > b[sortBy]) return 1;
+    return 0;
+  };
 
   const formatter = new Intl.NumberFormat('en-US', {
     style: 'currency',
     currency: 'USD',
     minimumFractionDigits: null,
   });
+
+  const sortedEmployees = [...employees].sort(sortEmployees);
 
   return (
     <div className="contain-table">
@@ -24,7 +32,7 @@ const Table = ({ employees, handleEdit, handleDelete }) => {
         </thead>
         <tbody>
           {employees.length > 0 ? (
-            employees.map((employee, i) => (
+            sortedEmployees.map((employee, i) => (
               
               <tr key={employee.id}>
                 <td>{employee.title}</td>
@@ -53,7 +61,7 @@ const Table = ({ employees, handleEdit, handleDelete }) => {
             ))
           ) : (
             <tr>
-              <td colSpan={7}>No Employees</td>
+              <td colSpan={7}>No Review</td>
             </tr>
           )}
         </tbody>
